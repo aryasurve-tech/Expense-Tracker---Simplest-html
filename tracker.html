@@ -4,84 +4,721 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f5f6f0">
     <title>Expense Tracker</title>
+    <style>
+        :root {
+            color-scheme: light;
+            font-family: Inter, "Segoe UI", sans-serif;
+            color: #202820;
+            background: #f5f6f0;
+            font-synthesis: none;
+            text-rendering: optimizeLegibility;
+            --green: #285c43;
+            --green-dark: #1e4935;
+            --muted: #778078;
+            --line: #e8ebe3;
+            --surface: #fff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-width: 320px;
+            margin: 0;
+            padding: 44px 24px 64px;
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        .app {
+            width: min(100%, 1040px);
+            margin: 0 auto;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 34px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 750;
+            letter-spacing: -0.03em;
+        }
+
+        .brand-mark {
+            display: grid;
+            width: 40px;
+            height: 40px;
+            place-items: center;
+            border-radius: 13px;
+            background: var(--green);
+            color: white;
+            font-size: 20px;
+        }
+
+        .today-label {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .intro {
+            margin-bottom: 27px;
+        }
+
+        .eyebrow {
+            margin: 0 0 9px;
+            color: var(--green);
+            font-size: 12px;
+            font-weight: 750;
+            letter-spacing: 0.13em;
+            text-transform: uppercase;
+        }
+
+        h1,
+        h2,
+        p {
+            margin-top: 0;
+        }
+
+        h1 {
+            margin-bottom: 9px;
+            font-size: clamp(30px, 5vw, 42px);
+            letter-spacing: -0.055em;
+        }
+
+        .intro-copy {
+            margin-bottom: 0;
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .summary-card,
+        .panel {
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            background: var(--surface);
+            box-shadow: 0 8px 24px rgb(33 48 35 / 4%);
+        }
+
+        .summary-card {
+            min-height: 125px;
+            padding: 22px 24px;
+        }
+
+        .summary-label {
+            margin-bottom: 13px;
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .summary-value {
+            margin: 0;
+            font-size: clamp(25px, 4vw, 32px);
+            font-weight: 750;
+            letter-spacing: -0.045em;
+        }
+
+        .panel {
+            padding: 25px;
+        }
+
+        .panel-heading {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .panel-heading h2 {
+            margin-bottom: 5px;
+            font-size: 18px;
+            letter-spacing: -0.025em;
+        }
+
+        .panel-heading p {
+            margin-bottom: 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: minmax(180px, 1.6fr) repeat(3, minmax(130px, 1fr));
+            gap: 15px;
+            align-items: end;
+        }
+
+        .field {
+            display: grid;
+            gap: 8px;
+        }
+
+        .field label {
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+            min-height: 45px;
+            padding: 0 12px;
+            border: 1px solid #dfe4dc;
+            border-radius: 10px;
+            outline: none;
+            background: white;
+            color: inherit;
+            font-size: 14px;
+        }
+
+        .field input:focus,
+        .field select:focus {
+            border-color: #6b987d;
+            box-shadow: 0 0 0 3px rgb(40 92 67 / 10%);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 18px;
+        }
+
+        .primary-button {
+            min-height: 45px;
+            padding: 0 18px;
+            border: 0;
+            border-radius: 10px;
+            background: var(--green);
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            transition: background 140ms ease, transform 140ms ease;
+        }
+
+        .primary-button:hover {
+            transform: translateY(-1px);
+            background: var(--green-dark);
+        }
+
+        .primary-button:focus-visible,
+        .delete-button:focus-visible {
+            outline: 3px solid #9ab9a4;
+            outline-offset: 2px;
+        }
+
+        .status {
+            min-height: 20px;
+            margin: 12px 0 0;
+            color: var(--green-dark);
+            font-size: 13px;
+        }
+
+        .status.error {
+            color: #a12d2d;
+        }
+
+        .expenses-panel {
+            margin-top: 22px;
+            padding-bottom: 10px;
+        }
+
+        .expense-count {
+            white-space: nowrap;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--line);
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 15px 14px;
+            border-bottom: 1px solid #f0f1ed;
+            font-size: 14px;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .expense-name {
+            font-weight: 650;
+        }
+
+        .category-pill {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 999px;
+            background: #f0f5f0;
+            color: #45664f;
+            font-size: 12px;
+            font-weight: 650;
+        }
+
+        .amount-cell {
+            white-space: nowrap;
+            font-weight: 700;
+        }
+
+        .delete-button {
+            padding: 7px 9px;
+            border: 0;
+            border-radius: 8px;
+            background: transparent;
+            color: #9a5b55;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 650;
+        }
+
+        .delete-button:hover {
+            background: #fff1ef;
+        }
+
+        .empty-state {
+            padding: 35px 15px;
+            color: var(--muted);
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            clip-path: inset(50%);
+        }
+
+        @media (max-width: 760px) {
+            body {
+                padding: 28px 16px 45px;
+            }
+
+            .form-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            .topbar {
+                align-items: flex-start;
+                margin-bottom: 28px;
+            }
+
+            .today-label {
+                max-width: 105px;
+                text-align: right;
+            }
+
+            .summary-grid {
+                gap: 10px;
+            }
+
+            .summary-card {
+                min-height: 110px;
+                padding: 17px;
+            }
+
+            .panel {
+                padding: 19px 16px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions .primary-button {
+                width: 100%;
+            }
+
+            th,
+            td {
+                padding-right: 10px;
+                padding-left: 10px;
+            }
+        }
+    </style>
 </head>
 
 <body>
+    <main class="app">
+        <header class="topbar">
+            <div class="brand">
+                <span class="brand-mark" aria-hidden="true">₹</span>
+                <span>pocket ledger</span>
+            </div>
+            <time class="today-label" id="todayLabel"></time>
+        </header>
 
-    <h1>Expense Tracker</h1>
+        <section class="intro" aria-labelledby="pageTitle">
+            <p class="eyebrow">Your money, in focus</p>
+            <h1 id="pageTitle">Expense tracker</h1>
+            <p class="intro-copy">Keep the little things clear. Every expense adds up.</p>
+        </section>
 
-    <h2>Add an Expense</h2>
+        <section class="summary-grid" aria-label="Expense summary">
+            <article class="summary-card">
+                <p class="summary-label">Total spent</p>
+                <p class="summary-value" id="total" aria-live="polite">₹0.00</p>
+            </article>
+            <article class="summary-card">
+                <p class="summary-label">Expenses logged</p>
+                <p class="summary-value" id="expenseCount" aria-live="polite">0</p>
+            </article>
+        </section>
 
-    <form id="expenseForm">
+        <section class="panel" aria-labelledby="addHeading">
+            <div class="panel-heading">
+                <div>
+                    <h2 id="addHeading">Add an expense</h2>
+                    <p>Capture the details while they are fresh.</p>
+                </div>
+            </div>
 
-        <label for="expense">Expense:</label>
-        <input type="text" id="expense" required>
+            <form id="expenseForm">
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="expense">Expense name</label>
+                        <input type="text" id="expense" name="expense" maxlength="80" placeholder="e.g. Lunch" required>
+                    </div>
+                    <div class="field">
+                        <label for="amount">Amount (₹)</label>
+                        <input type="number" id="amount" name="amount" min="0.01" step="0.01" placeholder="0.00" required>
+                    </div>
+                    <div class="field">
+                        <label for="category">Category</label>
+                        <select id="category" name="category" required>
+                            <option value="Food">Food</option>
+                            <option value="Transport">Transport</option>
+                            <option value="Bills">Bills</option>
+                            <option value="Shopping">Shopping</option>
+                            <option value="Health">Health</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="date">Date</label>
+                        <input type="date" id="date" name="date" required>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="primary-button" type="submit">Add expense</button>
+                </div>
+                <p class="status" id="statusMessage" role="status" aria-live="polite"></p>
+            </form>
+        </section>
 
-        <br><br>
-
-        <label for="amount">Amount:</label>
-        <input type="number" id="amount" required>
-
-        <br><br>
-
-        <button type="submit">Add Expense</button>
-
-    </form>
-
-    <h2>Your Expenses</h2>
-
-    <table border="1">
-
-        <thead>
-            <tr>
-                <th>Expense</th>
-                <th>Amount</th>
-            </tr>
-        </thead>
-
-        <tbody id="expenseList">
-        </tbody>
-
-    </table>
-
-    <h2>Total: ₹<span id="total">0</span></h2>
-
+        <section class="panel expenses-panel" aria-labelledby="expensesHeading">
+            <div class="panel-heading">
+                <div>
+                    <h2 id="expensesHeading">Your expenses</h2>
+                    <p>A clear view of where your money went.</p>
+                </div>
+                <span class="expense-count" id="listCount">0 entries</span>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">Expense</th>
+                            <th scope="col">Category</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Amount</th>
+                            <th scope="col"><span class="visually-hidden">Actions</span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="expenseList"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
 
     <script>
-
+        const storageKey = "pocket-ledger-expenses";
+        const categories = ["Food", "Transport", "Bills", "Shopping", "Health", "Other"];
         const form = document.getElementById("expenseForm");
+        const expenseInput = document.getElementById("expense");
+        const amountInput = document.getElementById("amount");
+        const categoryInput = document.getElementById("category");
+        const dateInput = document.getElementById("date");
         const expenseList = document.getElementById("expenseList");
         const totalDisplay = document.getElementById("total");
+        const expenseCount = document.getElementById("expenseCount");
+        const listCount = document.getElementById("listCount");
+        const statusMessage = document.getElementById("statusMessage");
 
-        let total = 0;
-
-        form.addEventListener("submit", function (event) {
-
-            event.preventDefault();
-
-            const expense = document.getElementById("expense").value;
-            const amount = Number(document.getElementById("amount").value);
-
-            const row = document.createElement("tr");
-
-            row.innerHTML = `
-                <td>${expense}</td>
-                <td>₹${amount}</td>
-            `;
-
-            expenseList.appendChild(row);
-
-            total = total + amount;
-
-            totalDisplay.textContent = total;
-
-            form.reset();
-
+        const currency = new Intl.NumberFormat("en-IN", {
+            style: "currency",
+            currency: "INR",
+            minimumFractionDigits: 2
         });
 
-    </script>
+        function localDateString(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+            return `${year}-${month}-${day}`;
+        }
 
+        function isValidDate(value) {
+            if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+                return false;
+            }
+
+            const parsed = new Date(`${value}T00:00:00`);
+            return !Number.isNaN(parsed.getTime()) && localDateString(parsed) === value;
+        }
+
+        function validateStoredExpenses(value) {
+            if (!Array.isArray(value)) {
+                throw new Error("Saved expense data is not a list.");
+            }
+
+            const validatedExpenses = value.map((item) => {
+                if (
+                    !item ||
+                    typeof item.id !== "string" ||
+                    typeof item.name !== "string" ||
+                    item.name.trim().length === 0 ||
+                    !Number.isFinite(item.amount) ||
+                    item.amount <= 0 ||
+                    !Number.isSafeInteger(Math.round(item.amount * 100)) ||
+                    !categories.includes(item.category) ||
+                    !isValidDate(item.date)
+                ) {
+                    throw new Error("Saved expense data contains an invalid entry.");
+                }
+
+                return {
+                    id: item.id,
+                    name: item.name,
+                    amount: Math.round(item.amount * 100) / 100,
+                    category: item.category,
+                    date: item.date
+                };
+            });
+
+            const totalInPaise = validatedExpenses.reduce(
+                (sum, expense) => sum + Math.round(expense.amount * 100),
+                0
+            );
+            if (!Number.isSafeInteger(totalInPaise)) {
+                throw new Error("Saved expenses exceed the supported total.");
+            }
+
+            return validatedExpenses;
+        }
+
+        function loadExpenses() {
+            const saved = localStorage.getItem(storageKey);
+            if (saved === null) {
+                return [];
+            }
+
+            return validateStoredExpenses(JSON.parse(saved));
+        }
+
+        function setStatus(message, isError) {
+            statusMessage.textContent = message;
+            statusMessage.classList.toggle("error", isError);
+        }
+
+        function renderExpenses() {
+            expenseList.replaceChildren();
+
+            if (expenses.length === 0) {
+                const row = document.createElement("tr");
+                const cell = document.createElement("td");
+                cell.colSpan = 5;
+                cell.className = "empty-state";
+                cell.textContent = "No expenses yet. Add your first one above.";
+                row.appendChild(cell);
+                expenseList.appendChild(row);
+            } else {
+                expenses.forEach((expense) => {
+                    const row = document.createElement("tr");
+                    const nameCell = document.createElement("td");
+                    const categoryCell = document.createElement("td");
+                    const dateCell = document.createElement("td");
+                    const amountCell = document.createElement("td");
+                    const actionCell = document.createElement("td");
+                    const category = document.createElement("span");
+                    const deleteButton = document.createElement("button");
+
+                    nameCell.className = "expense-name";
+                    nameCell.textContent = expense.name;
+                    category.className = "category-pill";
+                    category.textContent = expense.category;
+                    categoryCell.appendChild(category);
+                    dateCell.textContent = new Intl.DateTimeFormat("en-IN", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric"
+                    }).format(new Date(`${expense.date}T00:00:00`));
+                    amountCell.className = "amount-cell";
+                    amountCell.textContent = currency.format(expense.amount);
+                    deleteButton.type = "button";
+                    deleteButton.className = "delete-button";
+                    deleteButton.textContent = "Remove";
+                    deleteButton.setAttribute("aria-label", `Remove ${expense.name}`);
+                    deleteButton.dataset.expenseId = expense.id;
+                    actionCell.appendChild(deleteButton);
+
+                    row.append(nameCell, categoryCell, dateCell, amountCell, actionCell);
+                    expenseList.appendChild(row);
+                });
+            }
+
+            const totalInPaise = expenses.reduce(
+                (sum, expense) => sum + Math.round(expense.amount * 100),
+                0
+            );
+            totalDisplay.textContent = currency.format(totalInPaise / 100);
+            expenseCount.textContent = String(expenses.length);
+            listCount.textContent = `${expenses.length} ${expenses.length === 1 ? "entry" : "entries"}`;
+        }
+
+        function saveExpenses(nextExpenses) {
+            try {
+                localStorage.setItem(storageKey, JSON.stringify(nextExpenses));
+            } catch (error) {
+                console.error("Unable to save expenses in this browser.", error);
+                setStatus("Could not save changes in this browser. Your current list was not changed.", true);
+                return false;
+            }
+
+            expenses = nextExpenses;
+            renderExpenses();
+            setStatus("Expense list saved in this browser.", false);
+            return true;
+        }
+
+        document.getElementById("todayLabel").textContent = new Intl.DateTimeFormat("en-IN", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        }).format(new Date());
+        dateInput.value = localDateString(new Date());
+
+        let expenses = [];
+        let storageReady = false;
+        try {
+            expenses = loadExpenses();
+            storageReady = true;
+            renderExpenses();
+        } catch (error) {
+            console.error("Unable to load saved expenses.", error);
+            setStatus("Saved expenses could not be read. Existing browser data was left untouched.", true);
+            form.querySelectorAll("input, select, button").forEach((control) => {
+                control.disabled = true;
+            });
+            expenseList.innerHTML = '<tr><td class="empty-state" colspan="5">Saved data could not be loaded.</td></tr>';
+        }
+
+        form.addEventListener("submit", (event) => {
+            event.preventDefault();
+            if (!storageReady) {
+                return;
+            }
+
+            const name = expenseInput.value.trim();
+            const amount = Number(amountInput.value);
+            const category = categoryInput.value;
+            const date = dateInput.value;
+
+            if (!name || name.length > 80 || !Number.isFinite(amount) || amount <= 0 || !categories.includes(category) || !isValidDate(date)) {
+                setStatus("Enter a name, a positive amount, a category, and a valid date.", true);
+                return;
+            }
+
+            const amountInPaise = Math.round(amount * 100);
+            if (!Number.isSafeInteger(amountInPaise) || amountInPaise <= 0) {
+                setStatus("Enter an amount of at least ₹0.01.", true);
+                return;
+            }
+
+            const currentTotalInPaise = expenses.reduce(
+                (sum, item) => sum + Math.round(item.amount * 100),
+                0
+            );
+            if (!Number.isSafeInteger(currentTotalInPaise + amountInPaise)) {
+                setStatus("This amount would make the total too large to track accurately.", true);
+                return;
+            }
+
+            const expense = {
+                id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+                name,
+                amount: amountInPaise / 100,
+                category,
+                date
+            };
+
+            if (saveExpenses([expense, ...expenses])) {
+                form.reset();
+                dateInput.value = localDateString(new Date());
+                expenseInput.focus();
+            }
+        });
+
+        expenseList.addEventListener("click", (event) => {
+            if (!storageReady) {
+                return;
+            }
+
+            const target = event.target;
+            if (!(target instanceof HTMLButtonElement) || !target.dataset.expenseId) {
+                return;
+            }
+
+            const nextExpenses = expenses.filter((expense) => expense.id !== target.dataset.expenseId);
+            saveExpenses(nextExpenses);
+        });
+    </script>
 </body>
 
 </html>
